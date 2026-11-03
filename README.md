@@ -56,7 +56,7 @@ This will generate the icons as png and create an `addon.xpi` file which can be 
 
 These 21 and 19 years old Thunderbird bugs correspond roughly to the implemented features:
 * [Bug 307070: Request for Outlook-style AutoPreview feature to see first few lines of messages](https://bugzilla.mozilla.org/show_bug.cgi?id=307070)
-* [Bug 364090: smart subjects in the thread pane (like zimbra,gmail)](https://bugzilla.mozilla.org/show_bug.cgi?id=307070)
+* [Bug 364090: smart subjects in the thread pane (like zimbra,gmail)](https://bugzilla.mozilla.org/show_bug.cgi?id=364090)
 
 There were similar attempts to add message excerpts as extensions:
 * [MessagePreview](https://reviewers.addons.thunderbird.net/En-US/thunderbird/addon/messagepreview/): Adds a column to the table view that displays an excerpt on hover; no longer supported.
