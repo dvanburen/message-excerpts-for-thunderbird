@@ -40,7 +40,7 @@ Since this extension heavily relies on Experiment APIs, it is not expected to be
 
 Tested versions:
 
-- 153, 154, 155
+- 153, 154, 155, 156, 157, 158, 159, 160
 
 ## Building
 
