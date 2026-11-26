@@ -118,6 +118,46 @@ function logMsg(msg) {
 
 const ROW_SELECTOR = 'tr[is="thread-card"], tr[is="thread-row"]';
 
+const EXTRA_PREVIEW_LINE_HEIGHT = 18;
+
+function installCardHeightOverride(container, extensionState) {
+  const document = container.ownerDocument || container;
+  const tree = document.getElementById("threadTree");
+  const card = document.defaultView?.customElements.get("thread-card");
+  const height = card && Object.getOwnPropertyDescriptor(card, "ROW_HEIGHT");
+
+  if (!tree?.reset || !height?.configurable || !height.writable ||
+      !Number.isFinite(height.value)) {
+    logMsg("Four-row cards unavailable: unsupported card height implementation.");
+    return null;
+  }
+
+  let nativeHeight = height.value;
+  Object.defineProperty(card, "ROW_HEIGHT", {
+    configurable: true,
+    enumerable: height.enumerable,
+    get() {
+      const expanded = extensionState.excerptInThirdRow &&
+        !tree.classList.contains("cards-row-compact");
+      return nativeHeight + (expanded ? EXTRA_PREVIEW_LINE_HEIGHT : 0);
+    },
+    set(value) {
+      nativeHeight = value;
+    },
+  });
+
+  tree.classList.add("message-excerpts-two-lines");
+  return {
+    reset() {
+      if (tree.getAttribute("rows") === "thread-card") tree.reset();
+    },
+    restore() {
+      Object.defineProperty(card, "ROW_HEIGHT", { ...height, value: nativeHeight });
+      tree.classList.remove("message-excerpts-two-lines");
+    },
+  };
+}
+
 function installExcerptStyles(container) {
   if (container.querySelector(".custom-excerpt-styles")) return;
   const document = container.ownerDocument || container;
@@ -140,6 +180,15 @@ function installExcerptStyles(container) {
       overflow: hidden;
       white-space: nowrap;
       margin-inline-start: 0;
+    }
+    #threadTree.message-excerpts-two-lines .custom-excerpt-third-row > .custom-excerpt {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: ${EXTRA_PREVIEW_LINE_HEIGHT}px;
+      max-height: ${EXTRA_PREVIEW_LINE_HEIGHT * 2}px;
     }
   `;
   (container.head || container).appendChild(style);
@@ -282,6 +331,7 @@ async function setupMessageView(
 
   const container = foundData.root;
   installExcerptStyles(container);
+  state.cardHeight = installCardHeightOverride(container, extensionState);
   state.refresh = () => {
     for (const row of container.querySelectorAll(ROW_SELECTOR)) {
       addExcerptToRow(
@@ -339,6 +389,7 @@ async function setupMessageView(
     attributes: true,
     attributeFilter: ["id", "aria-label", "data-row", "data-properties"],
   });
+  state.cardHeight?.reset();
   state.refresh();
 }
 
@@ -609,6 +660,7 @@ this.messageExcerpts = class extends ExtensionCommon.ExtensionAPIPersistent {
         for (const state of this.activeStates) {
           if (state.win === win) {
             state.observer?.disconnect();
+            state.cardHeight?.restore();
             this.activeStates.delete(state);
           }
         }
@@ -630,7 +682,9 @@ this.messageExcerpts = class extends ExtensionCommon.ExtensionAPIPersistent {
     }
     for (const state of this.activeStates) {
       state.observer?.disconnect();
+      state.cardHeight?.restore();
       removeAllExcerpts(state.win.document.documentElement);
+      state.cardHeight?.reset();
     }
     this.activeStates.clear();
     this.pendingWindows.clear();
@@ -642,7 +696,10 @@ this.messageExcerpts = class extends ExtensionCommon.ExtensionAPIPersistent {
       messageExcerpts: {
         setExcerptInThirdRow: (enabled) => {
           this.extensionState.excerptInThirdRow = enabled;
-          for (const state of this.activeStates) state.refresh();
+          for (const state of this.activeStates) {
+            state.cardHeight?.reset();
+            state.refresh();
+          }
         },
         provideExcerpt: (bgRequestId, payload) => {
           const bgRequest = this.bgRequests.get(bgRequestId);

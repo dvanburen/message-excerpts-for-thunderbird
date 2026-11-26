@@ -40,7 +40,7 @@ browser.messageExcerpts.onExcerptRequested.addListener(async (msgId, attemptId) 
       }
     }
     excerpt = excerpt.replace(/\s+/g, " ").trim();
-    excerpt = excerpt.substring(0, 150) + (excerpt.length > 150 ? "..." : "");
+    excerpt = excerpt.substring(0, 320) + (excerpt.length > 320 ? "..." : "");
     payload = { status: "success", excerpt };
   } catch (error) {
     console.error("Failed to get excerpt:", error);

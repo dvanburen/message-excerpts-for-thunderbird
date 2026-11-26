@@ -1,3 +1,9 @@
+# Message Excerpts – Two-Line Cards
+
+This modified build keeps the subject on its own row and adds space for a second line of message preview. The extra space applies to three-row Cards View when the add-on setting to display excerpts below the subject is on. Compact Cards View and Table View keep their original layout.
+
+Disable the original Message Excerpts add-on before installing this build. Restart Betterbird after switching versions.
+
 # Message Excerpts for Thunderbird
 
 An extension for Thunderbird that displays message excerpts directly in the message list after the subject line, or optionally in the third row for cards view with 3 rows.

@@ -1,27 +1,27 @@
 {
   "manifest_version": 3,
-  "name": "Message Excerpts for Thunderbird",
-  "description": "Displays a message excerpt after the subject.",
-  "version": "0.1.5",
+  "name": "Message Excerpts – Two-Line Cards",
+  "description": "Shows up to two lines of message text below the subject in three-row Cards View.",
+  "version": "0.1.5.1",
   "author": "Michael Markl",
   "homepage_url": "https://github.com/michael-markl/message-excerpts-for-thunderbird",
   "browser_specific_settings": {
     "gecko": {
-      "id": "message-excerpts-for-thunderbird@michael-markl.de",
+      "id": "message-excerpts-two-line-cards@local.invalid",
       "strict_min_version": "128.0"
     }
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "options_ui": {
     "page": "options/options.html"
   },
   "icons": {
-    "16": "icon-16.png",
-    "32": "icon-32.png",
-    "64": "icon-64.png",
-    "128": "icon-128.png"
+    "48": "icon.svg",
+    "96": "icon.svg"
   },
   "permissions": [
     "messagesRead",
@@ -31,8 +31,14 @@
     "messageExcerpts": {
       "schema": "api/messageExcerpts/schema.json",
       "parent": {
-        "scopes": ["addon_parent"],
-        "paths": [["messageExcerpts"]],
+        "scopes": [
+          "addon_parent"
+        ],
+        "paths": [
+          [
+            "messageExcerpts"
+          ]
+        ],
         "script": "api/messageExcerpts/implementation.js"
       }
     }
